@@ -14,17 +14,25 @@ class Game:
         self.width = width
         self.height = height
         self.tile_padding = tile_padding
-        self.held_tile = None
 
         self.tile_width = self.width / Board.WIDTH
         self.tile_height = self.height / Board.HEIGHT
         self.tile_filled_width = self.tile_width * (1 - self.tile_padding)
         self.tile_filled_height = self.tile_height * (1 - self.tile_padding)
 
+        self.held_tile = None
+        self.player = Tile.BLUE
+
     @classmethod
     def new(cls, x=0, y=0, width=500, height=600, tile_padding=0.07):
         board = Board.new()
         return cls(board, x, y, width, height, tile_padding)
+
+    def switch_player(self):
+        if self.player == Tile.BLUE:
+            self.player = Tile.RED
+        else:
+            self.player = Tile.BLUE
 
     def display(self, surface, events):
         for x in range(Board.WIDTH):
@@ -85,6 +93,8 @@ class Game:
         tile = self.board.get_tile(x, y)
         if tile == 0:
             return
+        if tile.color != self.player:
+            return
         self.held_tile = tile
         self.held_tile.visible = False
 
@@ -92,5 +102,6 @@ class Game:
         move = self.held_tile.get_move(x, y)
         if self.held_tile.is_valid_move(self.board, move):
             self.board.perform_move(move)
+            self.switch_player()
         self.held_tile.visible = True
         self.held_tile = None
