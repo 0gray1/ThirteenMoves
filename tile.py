@@ -1,14 +1,15 @@
-from move import Move
+from utils import Move
 
 
 class Tile:
     RED = "R"
     BLUE = "B"
 
-    def __init__(self, x, y, color):
+    def __init__(self, x, y, color, visible=True):
         self.x = x
         self.y = y
         self.color = color
+        self.visible = visible
 
         # Y direction the tile can move in
         if color == self.BLUE:
@@ -20,7 +21,7 @@ class Tile:
         return str(self.color)
 
     def clone(self):
-        return Tile(self.x, self.y, self.color)
+        return Tile(self.x, self.y, self.color, self.visible)
 
     def get_move(self, xto, yto):
         return Move(self.x, self.y, xto, yto)
