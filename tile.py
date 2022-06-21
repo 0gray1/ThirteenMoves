@@ -31,6 +31,8 @@ class Tile:
 
         if not board.in_bounds(xto, yto):
             return False
+        if not yto - self.y == self.direction:
+            return False
 
         # A tile cannot be moved onto another tile of the same color
         to_tile = board.get_tile(xto, yto)

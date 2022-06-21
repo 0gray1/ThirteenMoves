@@ -1,3 +1,4 @@
+from events import Events
 from game import Game
 import pygame
 
@@ -8,16 +9,18 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode([600, 700])
 
-    game = Game.new()
+    game = Game.new(50, 50)
 
     running = True
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+        events = Events.update()
+
+        if events.quit:
+            running = False
 
         screen.fill(WHITE)
-        game.display(screen, 50, 50)
+        game.update(events)
+        game.display(screen, events)
         pygame.display.flip()
 
 

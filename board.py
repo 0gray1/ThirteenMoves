@@ -8,37 +8,6 @@ class Board:
     def __init__(self, tiles):
         self.tiles = tiles
 
-    def __str__(self):
-        """
-        Accessing via class name, instead of `self`, is slightly
-        faster; ie Board.HEIGHT as opposed to self.HEIGHT
-        """
-        string = "------------------\n"
-        for y in range(Board.HEIGHT):
-            string += "| "
-            for x in range(Board.WIDTH):
-                tile = self.tiles[x][y]
-                if tile != 0:
-                    string += str(tile)
-                    string += "  "
-                else:
-                    string += ".. "
-            string += "| \n"
-        string += "------------------"
-        return string + "\n"
-
-    @classmethod
-    def clone(cls):
-        tiles = [[0 for _ in range(Board.HEIGHT)] for _ in range(Board.WIDTH)]
-
-        for x in range(Board.WIDTH):
-            for y in range(Board.HEIGHT):
-                tile = Board.tiles[x][y]
-                if tile != 0:
-                    tiles[x][y] = tile.clone()
-
-        return cls(tiles)
-
     @classmethod
     def new(cls):
         tiles = [[0 for _ in range(Board.HEIGHT)] for _ in range(Board.WIDTH)]
@@ -48,6 +17,17 @@ class Board:
             tiles[x][Board.HEIGHT-1] = Tile(x, Board.HEIGHT-1, Tile.BLUE)
 
         return cls(tiles)
+
+    def clone(self):
+        tiles = [[0 for _ in range(Board.HEIGHT)] for _ in range(Board.WIDTH)]
+
+        for x in range(Board.WIDTH):
+            for y in range(Board.HEIGHT):
+                tile = self.tiles[x][y]
+                if tile != 0:
+                    tiles[x][y] = tile.clone()
+
+        return Board(tiles)
 
     @staticmethod
     def in_bounds(x, y):
