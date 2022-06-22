@@ -2,7 +2,8 @@ from events import Events
 from game import Game
 import pygame
 
-WHITE = (255, 255, 255)
+
+LIGHT_GRAY = (221, 221, 221)
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
         if events.quit:
             running = False
 
-        screen.fill(WHITE)
+        screen.fill(LIGHT_GRAY)
         game.update(events)
         game.display(screen, events)
         pygame.display.flip()
