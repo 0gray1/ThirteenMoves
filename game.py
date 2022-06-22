@@ -3,19 +3,21 @@ import pygame
 from visual_utils import alpha_rect, centered_text
 
 GRAY = (121, 121, 121)
-END = (48, 48, 48)
+END = (32, 32, 32)
 RED = (139, 0, 0)
 BLUE = (0, 0, 139)
-
+LIGHT_RED = (255, 102, 102)
+LIGHT_BLUE = (102, 102, 255)
 
 class Game:
-    def __init__(self, board, x, y, width, height, tile_padding):
+    def __init__(self, board, x, y, width, height, tile_padding, x_center):
         self.board = board
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.tile_padding = tile_padding
+        self.x_center = x_center
 
         self.tile_width = self.width / Board.WIDTH
         self.tile_height = self.height / Board.HEIGHT
@@ -28,13 +30,13 @@ class Game:
         self.moves_left = 13
 
     @classmethod
-    def new(cls, x=0, y=0, width=500, height=600, tile_padding=0.07):
+    def new(cls, x=0, y=0, width=500, height=600, tile_padding=0.07, x_center=250):
         board = Board.new()
-        return cls(board, x, y, width, height, tile_padding)
+        return cls(board, x, y, width, height, tile_padding, x_center)
 
     @staticmethod
     def display_end_screen(surface):
-        alpha_rect(surface, END, 0.8)
+        alpha_rect(surface, END, 0.85)
 
     def switch_player(self):
         if self.player == Tile.BLUE:
@@ -44,6 +46,8 @@ class Game:
             self.player = Tile.BLUE
 
     def display(self, surface, events):
+        self.display_move_counter(surface)
+
         for x in range(Board.WIDTH):
             for y in range(Board.HEIGHT):
                 self.display_tile(surface, x, y)
@@ -53,6 +57,7 @@ class Game:
 
         if not (self.winning is None):
             self.display_end_screen(surface)
+            self.display_player_wins(surface)
 
     def display_tile(self, surface, x, y):
         tile = self.board.get_tile(x, y)
@@ -68,11 +73,29 @@ class Game:
         else:
             pygame.draw.rect(surface, RED, rect)
 
-    def display_move_counter(self, surface, x, y, font_size=45):
+    def display_player_wins(self, surface, x=None, y=None, font_size=55):
+        if x is None:
+            x = self.x_center
+        if y is None:
+            y = self.y + self.height / 2
+
+        if self.winning == Tile.BLUE:
+            text = "Blue wins!"
+            color = LIGHT_BLUE
+        else:
+            text = "Red wins!"
+            color = LIGHT_RED
+        centered_text(surface, text, x, y, color, font_size=font_size)
+
+    def display_move_counter(self, surface, x=None, y=None, font_size=45):
+        if x is None:
+            x = self.x_center
+        if y is None:
+            y = self.y / 2
         moves_left = self.moves_left
         add_s = "" if moves_left == 1 else "s"
         text = f"{moves_left} Move{add_s} Left"
-        centered_text(surface, text, x, y, font_size=45)
+        centered_text(surface, text, x, y, font_size=font_size)
 
     def mouse_pos_to_tile(self, mouse_pos):
         tile_width = self.width / Board.WIDTH
