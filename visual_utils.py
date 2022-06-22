@@ -1,7 +1,7 @@
 import pygame
 
 
-def alpha_rect(surface, color, alpha=1, rect=None):
+def alpha_rect(surface, rect=None, color=(0, 0, 0), alpha=1):
     if rect is None:
         x, y, w, h = 0, 0, surface.get_width(), surface.get_height()
     else:
