@@ -1,7 +1,9 @@
 from board import Board, Tile
 import pygame
+from visual_utils import alpha_rect
 
 GRAY = (121, 121, 121)
+END = (48, 48, 48)
 RED = (139, 0, 0)
 BLUE = (0, 0, 139)
 
@@ -21,7 +23,9 @@ class Game:
         self.tile_filled_height = self.tile_height * (1 - self.tile_padding)
 
         self.held_tile = None
+        self.winning = None
         self.player = Tile.BLUE
+        self.moves_left = 13
 
     @classmethod
     def new(cls, x=0, y=0, width=500, height=600, tile_padding=0.07):
@@ -30,6 +34,7 @@ class Game:
 
     def switch_player(self):
         if self.player == Tile.BLUE:
+            self.moves_left -= 1
             self.player = Tile.RED
         else:
             self.player = Tile.BLUE
@@ -41,6 +46,9 @@ class Game:
 
         if not (self.held_tile is None):
             self.display_tile_on_mouse(surface, self.held_tile, events.mouse_pos)
+
+        if not (self.winning is None):
+            self.display_end_screen(surface)
 
     def display_tile(self, surface, x, y):
         tile = self.board.get_tile(x, y)
@@ -55,6 +63,9 @@ class Game:
             pygame.draw.rect(surface, BLUE, rect)
         else:
             pygame.draw.rect(surface, RED, rect)
+
+    def display_end_screen(self, surface):
+        alpha_rect(surface, END, 0.8)
 
     def mouse_pos_to_tile(self, mouse_pos):
         tile_width = self.width / Board.WIDTH
@@ -74,10 +85,15 @@ class Game:
         mouse_pos = events.mouse_pos
         x, y = self.mouse_pos_to_tile(mouse_pos)
 
-        if mouse_down and Board.in_bounds(x, y):
+        if mouse_down and Board.in_bounds(x, y) and (self.winning is None):
             self.select_tile(x, y)
         elif mouse_up and not (self.held_tile is None):
             self.release_tile(x, y)
+
+        if self.board.is_winning(Tile.BLUE):
+            self.winning = Tile.BLUE
+        elif self.board.is_winning(Tile.RED):
+            self.winning = Tile.RED
 
     def display_tile_on_mouse(self, surface, tile, mouse_pos):
         x, y = mouse_pos

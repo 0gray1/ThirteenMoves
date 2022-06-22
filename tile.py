@@ -1,4 +1,4 @@
-from utils import Move
+from move import Move
 
 
 class Tile:
