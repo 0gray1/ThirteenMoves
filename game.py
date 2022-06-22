@@ -1,6 +1,6 @@
 from board import Board, Tile
 import pygame
-from visual_utils import alpha_rect
+from visual_utils import alpha_rect, centered_text
 
 GRAY = (121, 121, 121)
 END = (48, 48, 48)
@@ -31,6 +31,10 @@ class Game:
     def new(cls, x=0, y=0, width=500, height=600, tile_padding=0.07):
         board = Board.new()
         return cls(board, x, y, width, height, tile_padding)
+
+    @staticmethod
+    def display_end_screen(surface):
+        alpha_rect(surface, END, 0.8)
 
     def switch_player(self):
         if self.player == Tile.BLUE:
@@ -64,8 +68,11 @@ class Game:
         else:
             pygame.draw.rect(surface, RED, rect)
 
-    def display_end_screen(self, surface):
-        alpha_rect(surface, END, 0.8)
+    def display_move_counter(self, surface, x, y, font_size=45):
+        moves_left = self.moves_left
+        add_s = "" if moves_left == 1 else "s"
+        text = f"{moves_left} Move{add_s} Left"
+        centered_text(surface, text, x, y, font_size=45)
 
     def mouse_pos_to_tile(self, mouse_pos):
         tile_width = self.width / Board.WIDTH
@@ -93,6 +100,8 @@ class Game:
         if self.board.is_winning(Tile.BLUE):
             self.winning = Tile.BLUE
         elif self.board.is_winning(Tile.RED):
+            self.winning = Tile.RED
+        elif self.moves_left <= 0:
             self.winning = Tile.RED
 
     def display_tile_on_mouse(self, surface, tile, mouse_pos):
