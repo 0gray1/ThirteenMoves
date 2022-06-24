@@ -1,4 +1,4 @@
-# ThirteenMoves
+# Thirteen Moves
 
 A minimalistic two-player strategy board game written in Python 3
 
@@ -6,8 +6,8 @@ A minimalistic two-player strategy board game written in Python 3
 
 Download the repository and install the pygame dependency
 
-	git clone https://github.com/0gray1/ThirteenMoves
-	cd ThirteenMoves
+	git clone https://github.com/0gray1/thirteen-moves
+	cd thirteen-moves/thirteen_moves
 	pip3 install pygame
 
 Run the program and start playing!
