@@ -6,7 +6,7 @@ A minimalistic two-player strategy board game written in Python 3
 
 Download the repository and install the pygame dependency
 
-	git clone git@github.com:0gray1/ThirteenMoves.git
+	git clone https://github.com/0gray1/ThirteenMoves
 	cd ThirteenMoves
 	pip3 install pygame
 
