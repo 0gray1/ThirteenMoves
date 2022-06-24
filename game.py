@@ -1,14 +1,17 @@
 from board import Board, Tile
 import pygame
-from visual_utils import alpha_rect, centered_text
+from visual_utils import alpha_rect, centered_text, set_cursor_to_default, Text
 
-GRAY = (121, 121, 121)
 END = (32, 32, 32)
+GRAY = (128, 128, 128)
+WHITE = (255, 255, 255)
+
 YELLOW = (246, 190, 0)
 RED = (139, 0, 0)
 BLUE = (0, 0, 139)
 LIGHT_RED = (255, 102, 102)
 LIGHT_BLUE = (102, 102, 255)
+
 
 class Game:
     def __init__(self, board, x, y, width, height, tile_padding, x_center):
@@ -30,6 +33,8 @@ class Game:
         self.player = Tile.BLUE
         self.moves_left = 13
 
+        self.new_game_text = Text("New Game", GRAY, WHITE, font_size=40)
+
     @classmethod
     def new(cls, x=0, y=0, width=500, height=600, tile_padding=0.07, x_center=250):
         board = Board.new()
@@ -38,6 +43,15 @@ class Game:
     @staticmethod
     def display_end_screen(surface):
         alpha_rect(surface, color=END, alpha=0.85)
+
+    def new_game(self):
+        set_cursor_to_default()
+
+        self.board = Board.new()
+        self.winning = None
+        self.held_tile = None
+        self.player = Tile.BLUE
+        self.moves_left = 13
 
     def mouse_pos_to_tile(self, mouse_pos):
         x, y = mouse_pos
@@ -76,6 +90,7 @@ class Game:
         if not (self.winning is None):
             self.display_end_screen(surface)
             self.display_player_wins(surface)
+            self.display_new_game_text(surface, events)
 
     def display_tile(self, surface, tile_pos):
         x, y = tile_pos
@@ -126,6 +141,13 @@ class Game:
         text = f"{moves_left} Move{add_s} Left"
         centered_text(surface, text, x, y, font_size=font_size)
 
+    def display_new_game_text(self, surface, events, x=None, y=None):
+        if x is None:
+            x = self.x_center
+        if y is None:
+            y = self.y + self.height * 2 / 3
+        self.new_game_text.display(surface, events, x, y)
+
     def update(self, events):
         mouse_down, mouse_up = events.mouse_down, events.mouse_up
         if not mouse_down and not mouse_up:
@@ -138,6 +160,10 @@ class Game:
             self.select_tile(x, y)
         elif mouse_up and not (self.held_tile is None):
             self.release_tile(x, y)
+
+        if mouse_down and self.new_game_text.highlighted:
+            self.new_game_text.highlighted = False
+            self.new_game()
 
         if self.board.is_winning(Tile.BLUE):
             self.winning = Tile.BLUE
