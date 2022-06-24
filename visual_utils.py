@@ -34,8 +34,10 @@ def set_cursor_to_default():
 
 
 class Text:
-    def __init__(self, text, color=(0, 0, 0), highlighted_color=(0, 0, 0), font_size=60, font="arialblack"):
+    def __init__(self, text, x, y, color=(0, 0, 0), highlighted_color=(0, 0, 0), font_size=60, font="arialblack"):
         self.text = text
+        self.x = x
+        self.y = y
         self.color = color
         self.highlighted_color = highlighted_color
         self.font_size = font_size
@@ -44,19 +46,25 @@ class Text:
         self.rect = get_text_rect(text, font_size, font)
         self.highlighted = False
 
-    def display(self, surface, events, x, y):
-        self.update(events, x, y)
+    def display(self, surface):
         if self.highlighted:
             set_cursor_to_hand()
-            centered_text(surface, self.text, x, y, self.highlighted_color, self.font_size, self.font)
+            centered_text(surface, self.text, self.x, self.y, self.highlighted_color, self.font_size, self.font)
         else:
             set_cursor_to_default()
-            centered_text(surface, self.text, x, y, self.color, self.font_size, self.font)
+            centered_text(surface, self.text, self.x, self.y, self.color, self.font_size, self.font)
 
-    def update(self, events, x, y):
-        mouse_x, mouse_y = events.mouse_pos
-        w, h = self.rect.w, self.rect.h
-        if x-w <= mouse_x < x+w and y-h <= mouse_y < y+h:
+    def update(self, events):
+        hovered = self.is_hovered(events)
+        if hovered:
             self.highlighted = True
         else:
             self.highlighted = False
+
+    def is_hovered(self, events):
+        mouse_x, mouse_y = events.mouse_pos
+        w, h = self.rect.w, self.rect.h
+        if self.x-w <= mouse_x < self.x+w and self.y-h <= mouse_y < self.y+h:
+            return True
+        else:
+            return False

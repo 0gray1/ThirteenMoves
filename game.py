@@ -33,7 +33,7 @@ class Game:
         self.player = Tile.BLUE
         self.moves_left = 13
 
-        self.new_game_text = Text("New Game", GRAY, WHITE, font_size=40)
+        self.new_game_text = Text("New Game", self.x_center, y + self.height * 15/24, GRAY, WHITE, font_size=40)
 
     @classmethod
     def new(cls, x=0, y=0, width=500, height=600, tile_padding=0.07, x_center=250):
@@ -90,7 +90,7 @@ class Game:
         if not (self.winning is None):
             self.display_end_screen(surface)
             self.display_player_wins(surface)
-            self.display_new_game_text(surface, events)
+            self.new_game_text.display(surface)
 
     def display_tile(self, surface, tile_pos):
         x, y = tile_pos
@@ -141,14 +141,9 @@ class Game:
         text = f"{moves_left} Move{add_s} Left"
         centered_text(surface, text, x, y, font_size=font_size)
 
-    def display_new_game_text(self, surface, events, x=None, y=None):
-        if x is None:
-            x = self.x_center
-        if y is None:
-            y = self.y + self.height * 2 / 3
-        self.new_game_text.display(surface, events, x, y)
-
     def update(self, events):
+        self.new_game_text.update(events)
+
         mouse_down, mouse_up = events.mouse_down, events.mouse_up
         if not mouse_down and not mouse_up:
             return
@@ -161,16 +156,16 @@ class Game:
         elif mouse_up and not (self.held_tile is None):
             self.release_tile(x, y)
 
-        if mouse_down and self.new_game_text.highlighted:
-            self.new_game_text.highlighted = False
-            self.new_game()
-
         if self.board.is_winning(Tile.BLUE):
             self.winning = Tile.BLUE
         elif self.board.is_winning(Tile.RED):
             self.winning = Tile.RED
         elif self.moves_left <= 0:
             self.winning = Tile.RED
+
+        if not (self.winning is None):
+            if mouse_down and self.new_game_text.is_hovered(events):
+                self.new_game()
 
     def display_tile_on_mouse(self, surface, tile, mouse_pos):
         x, y = mouse_pos
